@@ -21,12 +21,16 @@ public let ShelfElementKindSectionFooter = UICollectionView.elementKindSectionFo
 public protocol CollectionViewDelegateShelfLayout: UICollectionViewDelegate {
   
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize
+  
+  func collectionScrollViewDidScroll(_ scrollView: UIScrollView)
 }
 
-extension CollectionViewDelegateShelfLayout {
+public extension CollectionViewDelegateShelfLayout {
   func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
     return (collectionViewLayout as? CollectionViewShelfLayout)?.cellSize ?? CGSize.zero
   }
+  
+  func collectionScrollViewDidScroll(_ scrollView: UIScrollView) {}
 }
 
 
@@ -347,6 +351,9 @@ open class CollectionViewShelfLayout: UICollectionViewLayout {
 
 extension CollectionViewShelfLayout: UIScrollViewDelegate {
   public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    if let delegate = self.collectionView?.delegate as? CollectionViewDelegateShelfLayout {
+      delegate.collectionScrollViewDidScroll(scrollView)
+    }
     // Because we tell Collection View that it has its width of the content size equals to its width of its frame (and bounds).
     // This means that we can use its pan gesture recognizer to scroll our cells
     // Our hack is to use a scroll view per section, steal that scroll view's pan gesture recognizer and add it to collection view.
